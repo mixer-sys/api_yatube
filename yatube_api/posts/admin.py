@@ -11,7 +11,7 @@ class ViewSettings(admin.ModelAdmin):
     }
 
 
-class PostAdmin(admin.ModelAdmin):
+class PostAdmin(ViewSettings):
     list_display = ('pk', 'text', 'pub_date', 'author')
     search_fields = ('text',)
     list_filter = ('pub_date',)
