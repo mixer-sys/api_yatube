@@ -1,28 +1,15 @@
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
-from rest_framework.permissions import BasePermission
 from django.shortcuts import get_object_or_404
 from posts.models import Post, Group, Comment
 from api.serializers import PostSerializer, GroupSerializer, CommentSerializer
-
-
-class AuthorOrReadOnly(BasePermission):
-
-    def has_permission(self, request, view):
-        if request.user.is_authenticated:
-            return True
-        return False
-
-    def has_object_permission(self, request, view, obj):
-        if obj.author == request.user:
-            return True
-        return False
+from api.permissions import AuthorOrReadOnly
 
 
 class PostViewSet(viewsets.ModelViewSet):
 
-    permission_classes = [AuthorOrReadOnly]
+    permission_classes = (AuthorOrReadOnly,)
 
     queryset = Post.objects.all()
     serializer_class = PostSerializer
@@ -40,7 +27,7 @@ class GroupViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    permission_classes = [AuthorOrReadOnly]
+    permission_classes = (AuthorOrReadOnly,)
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
@@ -50,4 +37,4 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         post = get_object_or_404(Post, id=self.kwargs.get('post_id'))
-        return post.comments
+        return post.comments.all()
